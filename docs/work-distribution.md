@@ -1,0 +1,170 @@
+# MEDIS — Work Distribution (4 Members)
+
+**Principle:** every member touches both **code** and **documentation/UML**. No one is "just docs" or "just code".
+
+**Modules:** M1 Login · M2 Appointment · M3 Patient · M4 Doctor · M5 Reporting
+**Diagrams:** 1 Use Case · 1 Class · 4 Sequence
+
+---
+
+## Quick Allocation Matrix
+
+| Area | Member A | Member B | Member C | Member D |
+|------|:--------:|:--------:|:--------:|:--------:|
+| **Code Module** | M1 Login + User hierarchy | M3 Patient | M2 Appointment | M4 Doctor + M5 Reporting |
+| **UML — Use Case** | ✅ Lead | — | — | — |
+| **UML — Class Diagram** | — | ✅ Lead | — | — |
+| **Sequence Diagram** | Login | Add Patient | Book Appointment | Generate Report |
+| **DB / Infra** | DatabaseConnection (JDBC) | — | `schema.sql` + seed data | Main.java + SystemController |
+| **Docs** | README + setup guide | OOP concepts mapping | Module 2 functional doc | Module 4 & 5 doc + video script |
+| **Video** | Section 1 (Intro) | Section 2 (Class Diagram) | Section 3 (Sequence) | Section 4 + 5 (Demo + Code) + editing |
+
+> All 4 members must appear on camera (PDF requirement).
+
+---
+
+## Member A — Auth Foundation
+
+### Code
+- `User` abstract class + subclasses `Admin`, `Doctor`, `Receptionist` (inheritance + polymorphism)
+- `LoginFrame` (Swing UI)
+- `AuthService` (login logic, password hash check)
+- `UserDAO` (JDBC: findByUsername, insert, list)
+- `DatabaseConnection` singleton (JDBC bootstrap)
+- Role-based routing → correct dashboard after login
+
+### Diagrams
+- **Use Case Diagram** (whole system — owns it)
+- **Sequence Diagram — Login Process**
+
+### Documentation
+- `README.md` — how to compile, how to run, default credentials
+- Setup section in `planning.md` if updates needed
+
+### Video Section
+- Section 1: Introduction (1 min) — introduce all members + system overview
+
+---
+
+## Member B — Patient Module + Class Diagram
+
+### Code
+- `Patient` model class (encapsulation: private fields + getters/setters)
+- `PatientPanel` (Swing form + table view)
+- `PatientController`
+- `PatientService` (validation rules)
+- `PatientDAO` (CRUD via JDBC)
+- View patient history view
+
+### Diagrams
+- **Class Diagram** (lead — collects input from A/C/D for their classes)
+- **Sequence Diagram — Add Patient**
+
+### Documentation
+- OOP concepts mapping document — which file demonstrates encapsulation / inheritance / polymorphism / abstraction (referenced in video Section 5)
+
+### Video Section
+- Section 2: Class Diagram (3 min) — walk through structure, justify design
+
+---
+
+## Member C — Appointment Module + Database Design
+
+### Code
+- `Appointment` model class
+- `AppointmentPanel` (Swing UI: select patient, doctor, datetime)
+- `AppointmentController`
+- `AppointmentService` — **duplicate-slot prevention logic**
+- `AppointmentDAO`
+- View appointment list
+
+### Diagrams
+- **Sequence Diagram — Book Appointment**
+
+### Database / Infra
+- `schema.sql` — all 4 tables (users, patients, doctors, appointments)
+- UNIQUE constraint on `(doctor_id, appointment_datetime)`
+- Seed data (1 admin, 2 doctors, 2 patients, 1 receptionist)
+
+### Documentation
+- Module 2 functional doc — booking flow, validation rules
+- DB schema doc (table list + constraints)
+
+### Video Section
+- Section 3: Sequence Diagrams (3 min) — walk through Login, Appointment, Patient flows
+
+---
+
+## Member D — Doctor + Reporting + Integration
+
+### Code
+- `Doctor` model class + `Specialization` (if used as value object → composition)
+- `DoctorPanel` (Add/View, assign specialization)
+- `DoctorService` + `DoctorDAO`
+- `ReportPanel` (totals + doctor schedules)
+- `ReportService` (aggregates across DAOs)
+- `Main.java` — application entry point
+- `SystemController` — top-level controller (aggregates Patient/Doctor/Appointment lists)
+
+### Diagrams
+- **Sequence Diagram — Generate Report**
+
+### Documentation
+- Module 4 & Module 5 functional docs
+- **Video script / shot list** for the team
+- Integration doc — how modules wire together
+
+### Video Section
+- Section 4: System Demonstration (5–6 min) — live demo
+- Section 5: Code Explanation (2 min) — OOP concepts in code
+- **Video editing + final cut**
+
+---
+
+## Shared Responsibilities (everyone contributes)
+
+| Item | Notes |
+|------|-------|
+| Class Diagram input | A/C/D each send their classes to Member B |
+| Code reviews | Pair-review any cross-module touch (e.g. appointment ↔ doctor) |
+| Final testing | All 4 run the system end-to-end before submission |
+| ZIP packaging | Whoever submits — but content review by all |
+| Video appearance | All 4 visible on camera at minimum during Intro |
+
+---
+
+## Workload Balance Check
+
+| Member | Code Load | UML Load | Doc Load | Video Load |
+|--------|:---------:|:--------:|:--------:|:----------:|
+| A | Medium (Login + User hierarchy + DB connection) | Medium (Use Case + 1 Seq) | Medium (README) | Light (Intro) |
+| B | Medium (Patient module) | **Heavy** (Class Diagram + 1 Seq) | Light | Medium (Class explanation) |
+| C | Medium-Heavy (Appointment + DB schema) | Light (1 Seq) | Medium (DB + module doc) | Medium (Sequence explanation) |
+| D | **Heavy** (Doctor + Reporting + Main + Controller) | Light (1 Seq) | Medium (script + integration) | **Heavy** (Demo + Code + editing) |
+
+Rationale: B leads the Class Diagram (biggest UML deliverable) but has the lightest code load. D has the heaviest code load but the simplest UML. A and C sit in between.
+
+---
+
+## Timeline Sync Points (refer to `planning.md` §9)
+
+| Date | Sync Goal |
+|------|-----------|
+| Jun 10 | A finishes DatabaseConnection + C finishes `schema.sql` → everyone can start DAOs |
+| Jun 12 | B circulates first Class Diagram draft for review |
+| Jun 18 | A's login + B's patient module integrated (login flow can reach patient panel) |
+| Jun 21 | C's appointment + D's doctor integrated (booking works end-to-end) |
+| Jun 23 | D's reporting reads real data |
+| Jun 24 | All 4 sequence diagrams done |
+| Jun 26 | Full system test, all 4 members present |
+| Jun 27–28 | Record + edit video |
+| Jun 29 | Submit (by morning, not 11:59 pm) |
+
+---
+
+## Decision Log
+
+- [ ] Member names assigned to A / B / C / D
+- [ ] Confirm SQLite vs MySQL with lecturer (affects C's schema work)
+- [ ] Confirm whether ER Diagram is also lecturer-required (would shift to C if yes)
+- [ ] Agreed Git workflow (branch per member? main + PRs? direct commits?)
