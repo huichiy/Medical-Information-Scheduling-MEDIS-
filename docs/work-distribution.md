@@ -2,6 +2,8 @@
 
 **Principle:** every member touches both **code** and **documentation/UML**. No one is "just docs" or "just code".
 
+**Architecture:** Approach 1 — MVC + DAO (View → Controller → DAO → DB). No Service layer. See `docs/architecture-approaches.md`.
+
 **Modules:** M1 Login · M2 Appointment · M3 Patient · M4 Doctor · M5 Reporting
 **Diagrams:** 1 Use Case · 1 Class · 4 Sequence
 
@@ -11,7 +13,7 @@
 
 | Area | Member A | Member B | Member C | Member D |
 |------|:--------:|:--------:|:--------:|:--------:|
-| **Code Module** | M1 Login + User hierarchy | M3 Patient | M2 Appointment | M4 Doctor + M5 Reporting |
+| **Code Module** | M1 Login + `User`/`Admin`/`Receptionist` | M3 Patient | M2 Appointment | M4 Doctor + M5 Reporting |
 | **UML — Use Case** | ✅ Lead | — | — | — |
 | **UML — Class Diagram** | — | ✅ Lead | — | — |
 | **Sequence Diagram** | Login | Add Patient | Book Appointment | Generate Report |
@@ -26,12 +28,14 @@
 ## Member A — Auth Foundation
 
 ### Code
-- `User` abstract class + subclasses `Admin`, `Doctor`, `Receptionist` (inheritance + polymorphism)
-- `LoginFrame` (Swing UI)
-- `AuthService` (login logic, password hash check)
-- `UserDAO` (JDBC: findByUsername, insert, list)
-- `DatabaseConnection` singleton (JDBC bootstrap)
-- Role-based routing → correct dashboard after login
+- `User` abstract class + subclasses `Admin`, `Receptionist` (inheritance + polymorphism)
+  > Note: `Doctor extends User` is owned by Member D — see coordination note below
+- `LoginFrame` + `DashboardFrame` (Swing UI)
+- `LoginController` (login logic, calls `PasswordHasher.verify(...)`)
+- `UserDAO` interface + `UserDAOImpl` (JDBC: findByUsername, findAll)
+- `DatabaseConnection` singleton (JDBC bootstrap, auto-runs `schema.sql` on first launch)
+- `PasswordHasher` + `Validator` utilities (with JUnit tests — see plan Tasks 10–11)
+- Role-based tab routing in `DashboardFrame`
 
 ### Diagrams
 - **Use Case Diagram** (whole system — owns it)
@@ -50,11 +54,10 @@
 
 ### Code
 - `Patient` model class (encapsulation: private fields + getters/setters)
-- `PatientPanel` (Swing form + table view)
-- `PatientController`
-- `PatientService` (validation rules)
-- `PatientDAO` (CRUD via JDBC)
-- View patient history view
+- `PatientPanel` (Swing form + table view, includes medical history)
+- `PatientController` (does validation **and** orchestration — no separate Service)
+- `PatientDAO` interface + `PatientDAOImpl` (CRUD via JDBC)
+- `Result` helper class (shared by all controllers)
 
 ### Diagrams
 - **Class Diagram** (lead — collects input from A/C/D for their classes)
@@ -71,12 +74,11 @@
 ## Member C — Appointment Module + Database Design
 
 ### Code
-- `Appointment` model class
-- `AppointmentPanel` (Swing UI: select patient, doctor, datetime)
-- `AppointmentController`
-- `AppointmentService` — **duplicate-slot prevention logic**
-- `AppointmentDAO`
-- View appointment list
+- `Appointment` model class (with `Status` enum: SCHEDULED / COMPLETED / CANCELLED)
+- `AppointmentPanel` (Swing UI: select patient, doctor, datetime; cancel button)
+- `AppointmentController` — **owns the duplicate-slot prevention logic** (no Service layer)
+- `AppointmentDAO` interface + `AppointmentDAOImpl` (with `existsByDoctorAndTime` + UNIQUE constraint as DB safety net)
+- View appointment list + soft-cancel (status flag, no hard delete)
 
 ### Diagrams
 - **Sequence Diagram — Book Appointment**
@@ -98,13 +100,14 @@
 ## Member D — Doctor + Reporting + Integration
 
 ### Code
-- `Doctor` model class + `Specialization` (if used as value object → composition)
+- `Doctor` model class — **extends `User`** (coordination point with Member A — see below). `Doctor` doubles as User subclass AND doctor entity (holds `doctorId`, `name`, `specialization` directly; no separate `Specialization` value object).
 - `DoctorPanel` (Add/View, assign specialization)
-- `DoctorService` + `DoctorDAO`
+- `DoctorController` + `DoctorDAO` interface + `DoctorDAOImpl`
 - `ReportPanel` (totals + doctor schedules)
-- `ReportService` (aggregates across DAOs)
-- `Main.java` — application entry point
-- `SystemController` — top-level controller (aggregates Patient/Doctor/Appointment lists)
+- `ReportController` (aggregates across Patient/Doctor/Appointment DAOs)
+- `Main.java` — application entry point (wires up DAOs → Controllers → SystemController → LoginFrame)
+- `SystemController` — top-level controller (holds sub-controllers + current logged-in user)
+- `DialogHelper` (consistent JOptionPane wrapper used by all panels)
 
 ### Diagrams
 - **Sequence Diagram — Generate Report**
@@ -118,6 +121,20 @@
 - Section 4: System Demonstration (5–6 min) — live demo
 - Section 5: Code Explanation (2 min) — OOP concepts in code
 - **Video editing + final cut**
+
+---
+
+## Coordination point: `Doctor extends User`
+
+The `Doctor` class is **both** a `User` subclass (so it can log in) AND the doctor entity (with `doctorId`, `specialization`). This crosses two members:
+
+| Step | Owner | What |
+|------|-------|------|
+| 1 | Member A | Writes `User` abstract class first (Jun 13–14) and merges to `main` |
+| 2 | Member D | Pulls latest `main`, writes `Doctor extends User` with both User fields and doctor-entity fields |
+| 3 | Members A + D | PR review before merge — make sure constructor / getters match what `UserDAO` and `DoctorDAO` expect |
+
+`UserDAOImpl.findByUsername` joins `users` ↔ `doctors` on `user_id` and constructs the right subclass — Member A owns that JOIN query.
 
 ---
 
@@ -164,7 +181,13 @@ Rationale: B leads the Class Diagram (biggest UML deliverable) but has the light
 
 ## Decision Log
 
+- [x] Architecture: **Approach 1 — MVC + DAO** (no Service layer)
+- [x] Database: **SQLite** (bundled jar in `lib/`)
+- [x] Build: manual `javac` + bundled `lib/` (no Maven/Gradle)
+- [x] Polish level: **Solid coursework** (hashing + validation + soft-delete)
+- [x] Git workflow: **GitHub feature branches → PRs into `main`**
 - [ ] Member names assigned to A / B / C / D
-- [ ] Confirm SQLite vs MySQL with lecturer (affects C's schema work)
-- [ ] Confirm whether ER Diagram is also lecturer-required (would shift to C if yes)
-- [ ] Agreed Git workflow (branch per member? main + PRs? direct commits?)
+- [ ] Confirm SQLite acceptable with lecturer (next class)
+- [ ] Confirm hashing acceptable / not required as plaintext for marking
+- [ ] Confirm whether ER Diagram is also lecturer-required (would shift to Member C if yes)
+- [ ] Confirm all 4 members have Java 17 installed (minimum: Java 11)
