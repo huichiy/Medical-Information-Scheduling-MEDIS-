@@ -101,3 +101,6 @@ desktop.ini
 /data/*.dat
 /data/*.ser
 *.db
+
+# MEDIS — allow bundled libraries
+!lib/*.jar
