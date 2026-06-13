@@ -1,4 +1,4 @@
-package com.medis.model;
+package model;
 
 public class Receptionist extends User {
     public Receptionist(int id, String username, String hash) {

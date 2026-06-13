@@ -12,7 +12,7 @@ Java Swing + SQLite (no other frameworks).
 
 ```bash
 javac -d bin -cp "lib/*" $(find src -name "*.java")
-java  -cp "lib/*:bin" com.medis.Main
+java  -cp "lib/*:bin" Main
 ```
 
 On Windows replace `:` with `;` in the classpath.
@@ -21,7 +21,7 @@ On Windows replace `:` with `;` in the classpath.
 
 1. Open this folder in VS Code (Java Extension Pack required).
 2. Project Manager will detect `src/` and the JAR in `lib/`.
-3. Open `src/com/medis/Main.java` and press **F5**.
+3. Open `src/Main.java` and press **F5**.
 
 ## Default logins (from `db/schema.sql` seed data)
 
@@ -36,14 +36,14 @@ The database file `db/medis.db` is auto-created from `db/schema.sql` on first la
 ## Project layout
 
 ```
-src/com/medis/
+src/
 ├── model/         data classes (User, Patient, Doctor, Appointment, ...)
 ├── view/          Swing GUI (LoginFrame, DashboardFrame, panels)
 ├── controller/    business logic + validation
 ├── dao/           data access (interfaces + JDBC implementations)
 ├── db/            DatabaseConnection (singleton)
 ├── util/          PasswordHasher, Validator
-└── Main.java      entry point
+└── Main.java      entry point (default package)
 
 lib/               sqlite-jdbc + JUnit standalone (bundled)
 db/                schema.sql + medis.db (auto-created)

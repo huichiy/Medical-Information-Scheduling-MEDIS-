@@ -1,4 +1,4 @@
-package com.medis.model;
+package model;
 
 public abstract class User {
     protected int    userId;

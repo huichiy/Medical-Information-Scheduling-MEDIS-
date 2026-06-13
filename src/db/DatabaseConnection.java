@@ -1,4 +1,4 @@
-package com.medis.db;
+package db;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

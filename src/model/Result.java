@@ -1,4 +1,4 @@
-package com.medis.model;
+package model;
 
 public class Result {
     private final boolean ok;
