@@ -48,4 +48,4 @@ INSERT OR IGNORE INTO patients (patient_id, name, age, gender, medical_history) 
     (2, 'Bob Lim',   45, 'M', 'Hypertension');
 
 INSERT OR IGNORE INTO appointments (appointment_id, patient_id, doctor_id, appointment_datetime, status) VALUES
-    (1, 1, 1, '2026-07-01 10:00:00', 'SCHEDULED');
+    (1, 1, 1, '2026-07-01 10:00', 'SCHEDULED');
