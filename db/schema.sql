@@ -33,11 +33,11 @@ CREATE TABLE IF NOT EXISTS appointments (
 
 -- Seed data. Password hashes are SHA-256 of the plaintext shown in README:
 --   admin123  -> 240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9
---   pass123   -> d74ff0ee8da3b9806b18c877dbf29bbde50b5bd8e4dad7a3a725000feb82e8f1
+--   pass123   -> 9b8769a4a742959a2d0298c36fb70623f2dfacda8436237df08d8dfd5b37374c
 INSERT OR IGNORE INTO users (user_id, username, password, role) VALUES
     (1, 'admin',   '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', 'ADMIN'),
-    (2, 'doctor1', 'd74ff0ee8da3b9806b18c877dbf29bbde50b5bd8e4dad7a3a725000feb82e8f1', 'DOCTOR'),
-    (3, 'recep1',  'd74ff0ee8da3b9806b18c877dbf29bbde50b5bd8e4dad7a3a725000feb82e8f1', 'RECEPTIONIST');
+    (2, 'doctor1', '9b8769a4a742959a2d0298c36fb70623f2dfacda8436237df08d8dfd5b37374c', 'DOCTOR'),
+    (3, 'recep1',  '9b8769a4a742959a2d0298c36fb70623f2dfacda8436237df08d8dfd5b37374c', 'RECEPTIONIST');
 
 INSERT OR IGNORE INTO doctors (doctor_id, name, specialization, user_id) VALUES
     (1, 'Dr. Smith', 'Cardiology', 2),
