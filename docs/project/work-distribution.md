@@ -2,7 +2,7 @@
 
 **Principle:** every member touches both **code** and **documentation/UML**. No one is "just docs" or "just code".
 
-**Architecture:** Approach 1 — MVC + DAO (View → Controller → DAO → DB). No Service layer. See `docs/architecture-approaches.md`.
+**Architecture:** Approach 1 — MVC + DAO (View → Controller → DAO → DB). No Service layer. See `docs/design/architecture-approaches.md`.
 
 **Modules:** M1 Login · M2 Appointment · M3 Patient · M4 Doctor · M5 Reporting
 **Diagrams:** 1 Use Case · 1 Class · 4 Sequence
