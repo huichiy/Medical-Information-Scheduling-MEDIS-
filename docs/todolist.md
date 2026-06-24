@@ -2,20 +2,35 @@
 
 Source of truth for what's done / in progress / pending. Update as you go.
 
-**Today:** 2026-06-13 · **Due:** 2026-06-29 · **16 days left**
+**Today:** 2026-06-14 · **Due:** 2026-06-29
 
 Legend: ✅ done · 🟡 in progress · ⬜ pending · ⛔ blocked
 
 ---
 
+## 🎉 ALL CODE COMPLETE (branch `final`)
+
+The entire application (Tasks 1–31, all 5 modules) is implemented and verified
+on the **`final`** branch. 32 Java files compile clean.
+
+**Verification evidence:**
+- ✅ 19/19 JUnit tests pass (Validator, PasswordHasher)
+- ✅ 18/18 end-to-end smoke checks pass (login, CRUD, booking, duplicate-slot, soft-cancel, report)
+- ✅ GUI launches without crash; `db/medis.db` auto-creates from `schema.sql`
+
+**Bug found & fixed during build:** the seed password hash for `pass123`
+was wrong in `schema.sql` (would have blocked doctor1/recep1 login). TDD caught it.
+
+> Remaining work is **non-code**: UML diagrams, presentation video, final ZIP (Phase 8).
+
 ## Branch state
 
 | Branch | Status | Notes |
 |--------|--------|-------|
-| `main` | 7 commits ahead of `origin/main` | foundation merged in (unpushed) |
-| `member-a-auth` | 1 commit ahead of `main` | User hierarchy committed |
+| `final` | all code done | full app, tests green — **recommend merge to main** |
+| `main` | foundation merged (unpushed) | behind `final` |
 | `notes` | local only | internal planning docs |
-| `yap` | pushed | personal branch |
+| `yap` | pushed | personal branch (foundation + Task 6) |
 
 ---
 

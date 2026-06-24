@@ -17,6 +17,21 @@ java  -cp "lib/*:bin" Main
 
 On Windows replace `:` with `;` in the classpath.
 
+## Tests (optional)
+
+JUnit tests for the utility classes and an end-to-end controller smoke test:
+
+```bash
+# compile sources + tests
+javac -d bin -cp "lib/*" $(find src tests -name "*.java")
+
+# unit tests (Validator, PasswordHasher) — 19 tests
+java -jar lib/junit-platform-console-standalone-1.10.2.jar --class-path bin --scan-class-path
+
+# end-to-end smoke test (login, CRUD, booking, duplicate-slot, report) — 18 checks
+rm -f db/medis.db && java -cp "lib/*:bin" SmokeTest
+```
+
 ## VS Code
 
 1. Open this folder in VS Code (Java Extension Pack required).
