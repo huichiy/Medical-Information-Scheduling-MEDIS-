@@ -10,6 +10,7 @@ All project documentation for the Hospital Management System, organized by purpo
 |----------|---------------|
 | [HOW-TO-RUN.md](HOW-TO-RUN.md) | Build, run, login, and test the app — step by step |
 | [CODE-EXPLANATION.md](CODE-EXPLANATION.md) | Full walkthrough of every class + OOP concepts (video Section 5 script) |
+| [FOLDER-STRUCTURE.md](FOLDER-STRUCTURE.md) | What every folder and file is for, in plain language |
 
 ---
 
@@ -64,6 +65,7 @@ docs/
 ├── README.md                 ← you are here
 ├── HOW-TO-RUN.md             ← run & test guide
 ├── CODE-EXPLANATION.md       ← code walkthrough
+├── FOLDER-STRUCTURE.md       ← what each folder is for
 ├── Lab Exercise 2026.pdf     ← assignment brief
 ├── design/                   ← architecture & design docs
 ├── project/                  ← planning & management docs
