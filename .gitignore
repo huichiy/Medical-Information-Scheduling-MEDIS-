@@ -90,6 +90,9 @@ dist/
 nbdist/
 .nb-gradle/
 
+# Microsoft Office temp/lock files (e.g. ~$MEDIS-Report.docx)
+~$*
+
 # macOS
 .DS_Store
 
