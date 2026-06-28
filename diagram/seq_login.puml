@@ -1,0 +1,32 @@
+@startuml seq_login
+' Sequence 1 — Login (from LoginController.authenticate + UserDAOImpl.findByUsername)
+skinparam dpi 140
+skinparam shadowing false
+title Sequence Diagram 1 — Login
+
+actor User as A
+participant "LoginFrame" as V
+participant "LoginController" as C
+participant "UserDAO" as D
+database "SQLite\n(medis.db)" as DB
+participant "DashboardFrame" as DF
+
+A -> V : enter username/password, click Login
+V -> C : authenticate(username, password)
+C -> C : Validator.isNotBlank(username/password)
+C -> D : findByUsername(username)
+D -> DB : SELECT users LEFT JOIN doctors
+DB --> D : row(s)
+note right of D : instantiate Admin / Doctor /\nReceptionist by role column
+D --> C : Optional<User>
+C -> C : PasswordHasher.verify(password, hash)
+
+alt credentials valid
+  C --> V : Result.ok(user)
+  V -> DF : setCurrentUser(user); open dashboard
+else blank / not found / bad password
+  C --> V : Result.fail(msg)
+  V -> V : DialogHelper.showError(msg)
+end
+
+@enduml

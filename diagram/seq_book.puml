@@ -1,0 +1,40 @@
+@startuml seq_book
+' Sequence 2 — Book Appointment (from AppointmentController.book)
+skinparam dpi 140
+skinparam shadowing false
+title Sequence Diagram 2 — Book Appointment
+
+actor Receptionist as A
+participant "AppointmentPanel" as V
+participant "AppointmentController" as C
+participant "PatientDAO" as PD
+participant "DoctorDAO" as DD
+participant "AppointmentDAO" as AD
+database "SQLite\n(medis.db)" as DB
+
+A -> V : select patient, doctor, datetime; click Book
+V -> V : parse datetime (AppointmentDAOImpl.FMT)
+V -> C : book(patientId, doctorId, dt)
+C -> C : Validator.isFutureDate(dt)
+C -> PD : findById(patientId)
+PD --> C : Optional<Patient>
+C -> DD : findById(doctorId)
+DD --> C : Optional<Doctor>
+C -> AD : existsByDoctorAndTime(doctorId, dt)
+AD -> DB : SELECT COUNT(*) WHERE doctor_id, datetime
+DB --> AD : 0 (slot free)
+AD --> C : false
+
+alt valid & slot free
+  C -> AD : insert(new Appointment(patient, doctor, dt))
+  AD -> DB : INSERT (UNIQUE doctor_id, datetime)
+  DB --> AD : generated id
+  AD --> C : Result.ok(appointment)
+  C --> V : Result.ok
+  V -> V : DialogHelper.showInfo + refresh()
+else past date / slot taken / not found
+  C --> V : Result.fail(msg)
+  V -> V : DialogHelper.showError(msg)
+end
+
+@enduml
