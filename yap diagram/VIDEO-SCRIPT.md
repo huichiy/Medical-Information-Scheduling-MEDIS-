@@ -298,8 +298,8 @@
 > - **`Validator`** and **`PasswordHasher`** are reusable utilities for input validation
 >   and SHA-256 hashing.
 >
-> Together these give us a clean, testable, layered system — verified by our JUnit and
-> end-to-end smoke tests.
+> Together these give us a clean, layered, and maintainable system where each concern
+> lives in exactly one place.
 >
 > That concludes our presentation of MEDIS. Thank you."
 
