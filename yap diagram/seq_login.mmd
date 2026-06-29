@@ -1,0 +1,27 @@
+%% MEDIS — Sequence Diagram 1: Login Process
+sequenceDiagram
+    autonumber
+    actor Actor
+    participant LoginFrame
+    participant LoginController
+    participant UserDAO
+    participant Database
+    participant DashboardFrame
+
+    Actor->>LoginFrame: enter username/password, click Login
+    LoginFrame->>LoginController: authenticate(user, pass)
+    LoginController->>LoginController: Validator.isNotBlank(user, pass)
+    LoginController->>UserDAO: findByUsername(user)
+    UserDAO->>Database: SELECT ... LEFT JOIN doctors
+    Database-->>UserDAO: row(s)
+    Note over UserDAO: instantiate Admin / Doctor / Receptionist by role
+    UserDAO-->>LoginController: Optional[User]
+    LoginController->>LoginController: PasswordHasher.verify(pass, hash)
+
+    alt user found AND password matches
+        LoginController-->>LoginFrame: Result.ok(user)
+        LoginFrame->>DashboardFrame: setCurrentUser(user); open
+    else blank / invalid credentials
+        LoginController-->>LoginFrame: Result.fail(msg)
+        LoginFrame->>LoginFrame: DialogHelper.showError(msg)
+    end

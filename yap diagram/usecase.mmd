@@ -1,0 +1,57 @@
+%% MEDIS — Use Case Diagram
+%% Mermaid has no native use-case diagram type, so this is modelled as a
+%% flowchart: rectangles = actors, stadium shapes = use cases, the subgraph
+%% is the system boundary. Matches the code (Doctor == Receptionist access).
+flowchart LR
+    admin["Admin"]:::actor
+    doctor["Doctor"]:::actor
+    recep["Receptionist"]:::actor
+
+    subgraph MEDIS["MEDIS System"]
+        direction TB
+        UC_login(["Login"])
+        UC_logout(["Logout"])
+        UC_addpat(["Add / Update Patient"])
+        UC_viewpat(["View Patient Records"])
+        UC_adddoc(["Add / View Doctors"])
+        UC_book(["Book Appointment"])
+        UC_viewappt(["View Appointment List"])
+        UC_cancel(["Cancel Appointment"])
+        UC_report(["View Reports"])
+    end
+
+    %% Admin — full access (only role with Doctors + Reports)
+    admin --- UC_login
+    admin --- UC_logout
+    admin --- UC_addpat
+    admin --- UC_viewpat
+    admin --- UC_adddoc
+    admin --- UC_book
+    admin --- UC_viewappt
+    admin --- UC_report
+
+    %% Doctor — identical access to Receptionist (Patients + Appointments panels)
+    doctor --- UC_login
+    doctor --- UC_logout
+    doctor --- UC_addpat
+    doctor --- UC_viewpat
+    doctor --- UC_book
+    doctor --- UC_viewappt
+
+    %% Receptionist
+    recep --- UC_login
+    recep --- UC_logout
+    recep --- UC_addpat
+    recep --- UC_viewpat
+    recep --- UC_book
+    recep --- UC_viewappt
+
+    %% <<extend>>: Cancel Appointment extends View Appointment List
+    UC_cancel -. "«extend»" .-> UC_viewappt
+
+    %% Precondition: every use case requires a logged-in actor
+    precond["«precondition»<br/>all use cases require the<br/>actor to be logged in"]:::note
+    precond -. "applies to" .-> UC_login
+
+    classDef actor fill:#dbeafe,stroke:#1e3a8a,stroke-width:1px,color:#1e3a8a;
+    classDef note fill:#fef9c3,stroke:#b45309,color:#92400e,font-style:italic;
