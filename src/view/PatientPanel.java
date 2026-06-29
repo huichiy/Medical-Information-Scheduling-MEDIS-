@@ -6,6 +6,8 @@ import model.Result;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
 
 public class PatientPanel extends JPanel {
@@ -26,6 +28,20 @@ public class PatientPanel extends JPanel {
         setLayout(new BorderLayout());
         add(buildForm(), BorderLayout.NORTH);
         add(new JScrollPane(table), BorderLayout.CENTER);
+
+        // MouseListener: clicking a row loads its values into the form
+        // so the user can edit them and press "Update Selected".
+        table.addMouseListener(new MouseAdapter() {
+            @Override public void mouseClicked(MouseEvent e) {
+                int row = table.getSelectedRow();
+                if (row < 0) return;
+                nameField.setText(String.valueOf(model.getValueAt(row, 1)));
+                ageField.setText(String.valueOf(model.getValueAt(row, 2)));
+                genderBox.setSelectedItem(model.getValueAt(row, 3));
+                historyArea.setText(String.valueOf(model.getValueAt(row, 4)));
+            }
+        });
+
         refresh();
     }
 
@@ -49,9 +65,17 @@ public class PatientPanel extends JPanel {
         addBtn.addActionListener(e -> doAdd());
         c.gridx = 0; c.gridy = 2; p.add(addBtn, c);
 
+        JButton updateBtn = new JButton("Update Selected");
+        updateBtn.addActionListener(e -> doUpdate());
+        c.gridx = 1; p.add(updateBtn, c);
+
+        JButton clearBtn = new JButton("Clear");
+        clearBtn.addActionListener(e -> clearForm());
+        c.gridx = 2; p.add(clearBtn, c);
+
         JButton refreshBtn = new JButton("Refresh");
         refreshBtn.addActionListener(e -> refresh());
-        c.gridx = 1; p.add(refreshBtn, c);
+        c.gridx = 3; p.add(refreshBtn, c);
 
         return p;
     }
@@ -69,13 +93,44 @@ public class PatientPanel extends JPanel {
             (String) genderBox.getSelectedItem(), historyArea.getText());
         if (r.isOk()) {
             DialogHelper.showInfo(this, "Patient added");
-            nameField.setText("");
-            ageField.setText("");
-            historyArea.setText("");
+            clearForm();
             refresh();
         } else {
             DialogHelper.showError(this, r.getMessage());
         }
+    }
+
+    private void doUpdate() {
+        int row = table.getSelectedRow();
+        if (row < 0) {
+            DialogHelper.showError(this, "Select a patient to update");
+            return;
+        }
+        int id = (int) model.getValueAt(row, 0);
+        int age;
+        try {
+            age = Integer.parseInt(ageField.getText().trim());
+        } catch (NumberFormatException ex) {
+            DialogHelper.showError(this, "Age must be a number");
+            return;
+        }
+        Result r = system.patient().update(
+            id, nameField.getText(), age,
+            (String) genderBox.getSelectedItem(), historyArea.getText());
+        if (r.isOk()) {
+            DialogHelper.showInfo(this, "Patient updated");
+            refresh();
+        } else {
+            DialogHelper.showError(this, r.getMessage());
+        }
+    }
+
+    private void clearForm() {
+        nameField.setText("");
+        ageField.setText("");
+        genderBox.setSelectedIndex(0);
+        historyArea.setText("");
+        table.clearSelection();
     }
 
     private void refresh() {
