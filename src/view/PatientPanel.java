@@ -69,9 +69,6 @@ public class PatientPanel extends JPanel {
         updateBtn.addActionListener(e -> doUpdate());
         c.gridx = 1; p.add(updateBtn, c);
 
-        JButton clearBtn = new JButton("Clear");
-        clearBtn.addActionListener(e -> clearForm());
-        c.gridx = 2; p.add(clearBtn, c);
 
         JButton refreshBtn = new JButton("Refresh");
         refreshBtn.addActionListener(e -> refresh());
@@ -93,7 +90,6 @@ public class PatientPanel extends JPanel {
             (String) genderBox.getSelectedItem(), historyArea.getText());
         if (r.isOk()) {
             DialogHelper.showInfo(this, "Patient added");
-            clearForm();
             refresh();
         } else {
             DialogHelper.showError(this, r.getMessage());
@@ -125,13 +121,6 @@ public class PatientPanel extends JPanel {
         }
     }
 
-    private void clearForm() {
-        nameField.setText("");
-        ageField.setText("");
-        genderBox.setSelectedIndex(0);
-        historyArea.setText("");
-        table.clearSelection();
-    }
 
     private void refresh() {
         model.setRowCount(0);
