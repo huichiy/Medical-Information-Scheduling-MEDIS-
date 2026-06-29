@@ -104,6 +104,7 @@ public class AppointmentPanel extends JPanel {
         model.setRowCount(0);
         List<Appointment> appts = system.appointment().getAll();
         for (Appointment a : appts) {
+            if (a.getStatus() == Appointment.Status.CANCELLED) continue; // hide cancelled
             model.addRow(new Object[]{
                 a.getAppointmentId(),
                 a.getPatient() == null ? "?" : a.getPatient().getName(),
